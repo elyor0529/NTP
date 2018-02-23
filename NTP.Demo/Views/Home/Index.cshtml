@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "Сравните две даты";
+}
+
+@section css
+{
+    <style>
+        #jqclock-local.jqclock {
+        }
+
+        #jqclock-local .clockdate {
+        }
+
+        #jqclock-local .clocktime {
+            font-size: 48px;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+            #jqclock-local .clocktime strong {
+                font-weight: normal;
+                font-size: 20px;
+                margin-left: 5px;
+            }
+
+        #jqclock-remote.jqclock {
+        }
+
+        #jqclock-remote .clockdate {
+        }
+
+        #jqclock-remote .clocktime {
+            color: red;
+            font-size: 48px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+            #jqclock-remote .clocktime strong {
+                font-weight: normal;
+                font-size: 20px;
+                margin-left: 5px;
+            }
+
+        #diff-time {
+            color: black;
+            text-align: center;
+            font-size: 24px;
+            line-height: 1.2;
+            color: green;
+        }
+    </style>
+}
+
+<div style="background: #f3f3f3; margin: 20px; padding: 20px;">
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xl-6 text-center">
+            <p>Время с NTP-сервера</p>
+            <div id="jqclock-remote"></div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xl-6 text-center">
+            <p>Время на компьютере</p>
+            <div id="jqclock-local"></div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12 col-xl-12 col-sm-12 text-center">
+            <p>Разница во времени</p>
+            <div id="diff-time"></div>
+        </div>
+    </div>
+</div>
+
+@section js
+{
+    <script type="text/javascript" src="/Scripts/jQuery-Clock/jqClock.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var remoteTime=@ViewBag.ServerTime;
+            var localeTime = Date.now();
+
+            $("#jqclock-remote").clock({
+                "langSet": "ru",
+                "calendar":false,
+                "timeFormat": " H:i:s v",
+                "timestamp":remoteTime,
+                "rate": 50
+            });
+
+            $("#jqclock-local").clock({
+                "langSet": "ru",
+                "calendar":false,
+                "timeFormat": " H:i:s v",
+                "timestamp":localeTime,
+                "rate": 50
+            });
+
+            setInterval(function() {
+                remoteTime = parseInt($("#jqclock-remote :hidden").val());
+                localeTime = parseInt($("#jqclock-local :hidden").val());
+
+                var diffTime =  localeTime - remoteTime;
+                $("#diff-time").html("<strong>"+diffTime+"</strong>");
+            },50);
+
+        });
+    </script>
+}
